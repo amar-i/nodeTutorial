@@ -4,7 +4,7 @@
   "description": "node tutorial",
   "main": "src/app.js",
   "scripts": {
-    "dev": "npx src/app.js"
+    "dev": "nodemon src/app.js"
   },
   "author": "Josh",
   "license": "ISC",
