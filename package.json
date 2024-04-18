@@ -1,0 +1,15 @@
+{
+  "name": "ls",
+  "version": "1.0.0",
+  "description": "node tutorial",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "node src/app.js"
+  },
+  "author": "Josh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^9.0.1"
+  }
+}
