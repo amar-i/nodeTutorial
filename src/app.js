@@ -1,51 +1,79 @@
-const express = require('express')
-
-const app = express()
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Database
-const mongoose = require('mongoose');
-mongoose.set('strictQuery', false);
-
-if(process.env.NODE_ENV !== 'production') {
+// Environment configuration
+if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
 
-const PORT = process.env.PORT || 3000;
-const db = process.env.db 
+const express = require('express');
+const mongoose = require('mongoose');
 
-// Connect to MongoDB database & start server
-const start = async () => {
+// Constants
+const PORT = process.env.PORT || 3000;
+const dbURI = process.env.DB_URI;
+const Customer = require('./models/customer');
+
+// Express application
+const app = express();
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Database connection
+mongoose.set('strictQuery', false);
+
+async function connectToDatabase(uri) {
     try {
-    await mongoose.connect(db);
-    console.log('Connected to MongoDB');
-    
-    app.listen(PORT, () => {
-        console.log(`Server is listening to ${PORT}...`)
-    });
-    } catch (e) {
-        console.error(`Error: ${e.message}`);
+        await mongoose.connect(uri);
+        console.log('Connected to MongoDB');
+    } catch (error) {
+        console.error(`Database connection error: ${error.message}`);
+        process.exit(1);
     }
-};
+}
+
+// Server start function
+async function startServer() {
+    await connectToDatabase(dbURI);
+    app.listen(PORT, () => {
+        console.log(`Server is listening on port ${PORT}...`);
+    });
+}
+
+// Customers data
+const  customer = new Customer({
+    name: 'John Doe 2.0',
+    email: 'john@testemail.com',
+    industry: 'Technology',
+    age: 35,
+});
+
+// Routes
+app.get('/', (req, res) => {
+    res.send('Welcome to my test API!');
+});
+
+// Get all customers
+app.get('/api/customers', async (req, res) => {
+    try {
+        const customers = await Customer.find();
+        res.json(customers);
+    } catch (e) {
+        res.status(500).json({ Error: e.message });
+    }
+});
+
+// Add a new customer
+app.post('/api/customers', (req, res) => {
+    try {
+        const customer = new Customer(req.body);
+        customer.save();
+        res.status(201).json({customer});
+        console.log('Customer saved successfully', customer);
+    } catch (error) {
+        res.status(400).json({ Error: error.message });
+    }
+
+});
 
 // Start the server
-start();
-
-
-// Home route
-app.get('/', (req, res) => {
-    res.send('Welcome to my test API!')
-});
-
-// Customers route
-app.get('/api/customers', (req, res) => {
-    res.send({customers: customers})
-});
-
-// Post Customers route
-app.post('/api/customers', (req, res) => {
-    console.log(req.body);
-    res.send(req.body)
-});
-
+startServer();
