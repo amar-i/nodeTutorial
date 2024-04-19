@@ -41,7 +41,7 @@ async function startServer() {
 
 // Customers data
 const  customer = new Customer({
-    name: 'John Doe',
+    name: 'John Doe 2.0',
     email: 'john@testemail.com',
     industry: 'Technology',
     age: 35,
@@ -52,13 +52,18 @@ app.get('/', (req, res) => {
     res.send('Welcome to my test API!');
 });
 
-app.get('/api/customers', (req, res) => {
-    res.send({ customers: customer });
+app.get('/api/customers', async (req, res) => {
+    try {
+        const customers = await Customer.find();
+        res.json(customers);
+    } catch (e) {
+        res.status(500).json({ Error: e.message });
+    }
 });
 
 app.post('/api/customers', (req, res) => {
     console.log(req.body);
-    res.send(req.body);
+    res.json(req.body);
 });
 
 // Start the server
