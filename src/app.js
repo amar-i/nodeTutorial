@@ -52,6 +52,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to my test API!');
 });
 
+// Get all customers
 app.get('/api/customers', async (req, res) => {
     try {
         const customers = await Customer.find();
@@ -61,9 +62,17 @@ app.get('/api/customers', async (req, res) => {
     }
 });
 
+// Add a new customer
 app.post('/api/customers', (req, res) => {
-    console.log(req.body);
-    res.json(req.body);
+    try {
+        const customer = new Customer(req.body);
+        customer.save();
+        res.status(201).json({customer});
+        console.log('Customer saved successfully', customer);
+    } catch (error) {
+        res.status(400).json({ Error: error.message });
+    }
+
 });
 
 // Start the server
