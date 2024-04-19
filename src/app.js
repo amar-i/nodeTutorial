@@ -55,12 +55,28 @@ app.get("/api/customers", async (req, res) => {
   }
 });
 
-// Customers data
-let customer1 = new Customer({
-  name: "Jane Doe",
-  email: "john@testemail.com",
-  industry: "Technology",
-  age: 35,
+/****************************************************************************************
+req. 
+    params are used to get data from the URL after the colon
+    body is used to get data from the request body (POST requests)
+****************************************************************************************/
+
+// Get a single customer
+app.get("/api/customers/:id", async (req, res) => {
+  try {
+    const customerId = req.params.id;
+    const customer = await Customer.findById(customerId);
+    console.log(customer);
+
+    // If the customer is not found 
+    if (!customer) {
+        return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.json(customer);
+  } catch (error) {
+    res.status(500).json({ Error: error.message });
+}
 });
 
 // Add a new customer
