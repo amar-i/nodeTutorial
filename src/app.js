@@ -1,37 +1,37 @@
 const express = require('express')
+
 const app = express()
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const PORT = 3000
-app.listen(PORT, () => {
-    console.log(`Server is listening to ${PORT}...`)
-});
+// Database
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', false);
 
-const customers = [
-    {
-        name: "Alice",
-        age: 25,
-        occupation: "Engineer",
-        location: "San Francisco, CA",
-        hobbies: ["cycling", "painting"],
-        description: "Alice is a mechanical engineer who loves to innovate and design new products. She enjoys cycling around the city and spends weekends painting landscapes."
-    },
-    {
-        name: "Bob",
-        age: 30,
-        occupation: "Designer",
-        location: "New York, NY",
-        hobbies: ["photography", "traveling"],
-        description: "Bob is a graphic designer specializing in digital art. He has a passion for photography and travels frequently to capture diverse cultures and landscapes."
-    },
-    {
-        name: "Charlie",
-        age: 28,
-        occupation: "Teacher",
-        location: "Chicago, IL",
-        hobbies: ["reading", "chess"],
-        description: "Charlie teaches history at a high school and loves to engage students with interactive learning. In his free time, he reads historical novels and plays chess."
+if(process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+
+const PORT = process.env.PORT || 3000;
+const db = process.env.db 
+
+// Connect to MongoDB database & start server
+const start = async () => {
+    try {
+    await mongoose.connect(db);
+    console.log('Connected to MongoDB');
+    
+    app.listen(PORT, () => {
+        console.log(`Server is listening to ${PORT}...`)
+    });
+    } catch (e) {
+        console.error(`Error: ${e.message}`);
     }
-];
+};
+
+// Start the server
+start();
+
 
 // Home route
 app.get('/', (req, res) => {
@@ -45,5 +45,7 @@ app.get('/api/customers', (req, res) => {
 
 // Post Customers route
 app.post('/api/customers', (req, res) => {
-    res.json ({customers: customers.map(customer => customer.name)})
+    console.log(req.body);
+    res.send(req.body)
 });
+
