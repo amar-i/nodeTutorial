@@ -6,3 +6,5 @@ node_modules/
 
 # ignore all files in the build directory
 build/
+
+.env
