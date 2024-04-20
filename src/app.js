@@ -91,5 +91,28 @@ app.post("/api/customers", async (req, res) => {
   }
 });
 
+
+// Update a customer
+app.put("/api/customers/:id", async (req, res) => {
+  const customerId = req.params.id;
+  const updates = req.body;
+  try {
+    const updatedCustomer = await Customer.findByIdAndUpdate(customerId, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    // If customer is not found
+    if (!updatedCustomer) {
+      return res.status(404).json({ Error: "Customer not found" });
+    }
+
+    res.status(200).json({ updatedCustomer });  
+
+  } catch (error) {
+    res.status(400).json({ message: "Error updating customer", Error: error.message });
+  }
+})
+
 // Start the server
 startServer();
