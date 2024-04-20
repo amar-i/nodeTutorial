@@ -5,12 +5,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require("cors");
 
 // Constants
 const PORT = process.env.PORT || 3000;
 const dbURI = process.env.DB_URI;
-const Customer = require('./models/customer');
-const customer = require("./models/customer");
+const Customer = require("./models/customer");
 
 // Express application
 const app = express();
@@ -18,6 +18,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // Database connection
 mongoose.set("strictQuery", false);
